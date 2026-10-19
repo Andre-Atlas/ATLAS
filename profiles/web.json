@@ -1,0 +1,1 @@
+{ "description": "Aplicação web React com as três lanes iniciais.", "modules": ["core", "lane-design", "lane-architecture", "lane-audit", "stack-react"] }

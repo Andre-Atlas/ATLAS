@@ -1,0 +1,8 @@
+{
+  "name": "atlas",
+  "version": "0.1.0",
+  "description": "Orquestração de agentes e skills para projetos de software: maestro, lanes por paradigma e gates, sobre ECC e superpowers.",
+  "author": { "name": "André", "url": "https://github.com/Andre-Atlas" },
+  "repository": "https://github.com/Andre-Atlas/ATLAS",
+  "keywords": ["agents", "skills", "orchestration", "workflow"]
+}

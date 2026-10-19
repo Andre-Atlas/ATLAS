@@ -1,0 +1,9 @@
+{
+  "description": "Lane Auditoria: time paralelo de auditores, verificação adversarial, relatório e backlog.",
+  "lane": "auditoria",
+  "skills": {
+    "atlas": ["atlas-lane-audit"],
+    "ecc": ["production-audit", "security-scan", "click-path-audit", "agent-architecture-audit"]
+  },
+  "agents": { "atlas": ["audit-lead"], "ecc": ["silent-failure-hunter", "performance-optimizer", "pr-test-analyzer", "comment-analyzer"] }
+}

@@ -1,0 +1,35 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch pinned sources
+        run: |
+          for name in ecc superpowers; do
+            repo=$(jq -r ".${name}.repo" catalog/sources.json)
+            ref=$(jq -r ".${name}.ref" catalog/sources.json)
+            mkdir -p "../src-${name}" && cd "../src-${name}"
+            git init -q
+            git remote add origin "https://github.com/${repo}.git"
+            git fetch -q --depth 1 origin "$ref"
+            git checkout -q FETCH_HEAD
+            cd - > /dev/null
+          done
+
+      - name: Test
+        env:
+          ATLAS_ECC_PATH: ${{ github.workspace }}/../src-ecc
+          ATLAS_SUPERPOWERS_PATH: ${{ github.workspace }}/../src-superpowers
+        run: npm test

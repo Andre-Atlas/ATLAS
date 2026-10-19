@@ -1,0 +1,1 @@
+{ "description": "Backend Node sem interface, com Arquitetura e Auditoria.", "modules": ["core", "lane-architecture", "lane-audit", "stack-node"] }

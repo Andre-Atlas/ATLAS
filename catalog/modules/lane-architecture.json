@@ -1,0 +1,9 @@
+{
+  "description": "Lane Arquitetura: alternativas, ADR, contratos verificáveis.",
+  "lane": "arquitetura",
+  "skills": {
+    "atlas": ["atlas-lane-architecture"],
+    "ecc": ["hexagonal-architecture", "api-design", "contract-first", "backend-patterns", "database-migrations", "product-capability", "blueprint"]
+  },
+  "agents": { "ecc": ["type-design-analyzer", "database-reviewer"] }
+}
