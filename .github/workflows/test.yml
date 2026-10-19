@@ -17,7 +17,7 @@ jobs:
 
       - name: Fetch pinned sources
         run: |
-          for name in ecc superpowers; do
+          for name in ecc superpowers skills; do
             repo=$(jq -r ".${name}.repo" catalog/sources.json)
             ref=$(jq -r ".${name}.ref" catalog/sources.json)
             mkdir -p "../src-${name}" && cd "../src-${name}"
@@ -32,4 +32,5 @@ jobs:
         env:
           ATLAS_ECC_PATH: ${{ github.workspace }}/../src-ecc
           ATLAS_SUPERPOWERS_PATH: ${{ github.workspace }}/../src-superpowers
+          ATLAS_SKILLS_PATH: ${{ github.workspace }}/../src-skills
         run: npm test
