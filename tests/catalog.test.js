@@ -11,6 +11,7 @@ const ROOTS = {
   atlas: ATLAS_ROOT,
   ecc: process.env.ATLAS_ECC_PATH,
   superpowers: process.env.ATLAS_SUPERPOWERS_PATH,
+  skills: process.env.ATLAS_SKILLS_PATH,
 };
 
 function frontmatterName(file) {
@@ -87,6 +88,8 @@ test('resolveInstall merges modules without duplicates and always adds core', ()
   assert.strictEqual(new Set(ecc).size, ecc.length);
   assert.ok(ecc.includes('click-path-audit'));
   assert.ok(r.agents.atlas.includes('maestro'));
+  assert.deepStrictEqual(r.skills.skills, ['find-skills']);
+  assert.ok(ecc.includes('skill-scout'));
 });
 
 test('unknown profile or module fails with the available names', () => {

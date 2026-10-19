@@ -1,5 +1,25 @@
 {
-  "superpowers": { "repo": "Andre-Atlas/superpowers", "ref": "bb92a77741419a4ab5f06e711a283343f1ada0c3", "skillsDir": "skills" },
-  "ecc": { "repo": "Andre-Atlas/ECC", "ref": "76aaa77df6adc5b889e689007bf99b9a4f74af34", "skillsDir": "skills", "agentsDir": "agents" },
-  "atlas": { "repo": "Andre-Atlas/ATLAS", "ref": "main", "self": true, "skillsDir": "skills", "agentsDir": "agents" }
+  "superpowers": {
+    "repo": "Andre-Atlas/superpowers",
+    "ref": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+    "skillsDir": "skills"
+  },
+  "ecc": {
+    "repo": "Andre-Atlas/ECC",
+    "ref": "76aaa77df6adc5b889e689007bf99b9a4f74af34",
+    "skillsDir": "skills",
+    "agentsDir": "agents"
+  },
+  "skills": {
+    "repo": "Andre-Atlas/skills",
+    "ref": "13e4063a1cf913f5606d57d42ab83a86f5001e04",
+    "skillsDir": "skills"
+  },
+  "atlas": {
+    "repo": "Andre-Atlas/ATLAS",
+    "ref": "main",
+    "self": true,
+    "skillsDir": "skills",
+    "agentsDir": "agents"
+  }
 }

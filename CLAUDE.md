@@ -19,7 +19,7 @@ Camada de orquestração sobre superpowers e ECC. Este repositório só contém 
 
 ```bash
 npm test
-ATLAS_ECC_PATH=../ECC ATLAS_SUPERPOWERS_PATH=../superpowers npm test   # valida referências
+ATLAS_ECC_PATH=../ECC ATLAS_SUPERPOWERS_PATH=../superpowers ATLAS_SKILLS_PATH=../skills npm test   # valida referências
 ```
 
 Rode os dois antes de commitar. Commits no formato convencional (`feat:`, `fix:`, `docs:`…).

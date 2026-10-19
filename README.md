@@ -66,6 +66,10 @@ A partir daí rodam só as fases do tamanho declarado. Há dois gates: **Gate 1*
 3. Rode os testes com as cópias locais (abaixo). Se algum skill ou agente referenciado sumiu ou mudou de nome, o teste aponta.
 4. Rode o instalador de novo nos projetos.
 
+### Skills fora do catálogo
+
+Quando um projeto precisa de algo que nenhum módulo cobre, o `atlas-maestro` segue esta ordem: módulo do catálogo, depois `find-skills` (busca no ecossistema com `npx skills find`), e só então `skill-scout` antes de criar um skill novo. Instalar um skill de fora sempre pede aprovação, e o que se repetir em dois projetos vira módulo do ATLAS.
+
 Quando um skill de terceiros não serve como está, crie um skill com nome próprio em `skills/` que o envolva ou substitua e troque a referência no módulo. Nunca edite o original.
 
 ## Desenvolvimento
@@ -73,7 +77,7 @@ Quando um skill de terceiros não serve como está, crie um skill com nome próp
 ```bash
 npm test
 # validação completa das referências contra as fontes fixadas:
-ATLAS_ECC_PATH=../ECC ATLAS_SUPERPOWERS_PATH=../superpowers npm test
+ATLAS_ECC_PATH=../ECC ATLAS_SUPERPOWERS_PATH=../superpowers ATLAS_SKILLS_PATH=../skills npm test
 ```
 
 Para testar mudanças locais do ATLAS num projeto antes do push, use `--atlas-path .`.

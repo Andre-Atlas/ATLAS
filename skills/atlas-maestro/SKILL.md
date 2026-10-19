@@ -111,6 +111,16 @@ ATLAS combina skills do superpowers e do ECC. Quando dois cobrem o mesmo assunto
 
 O ATLAS não instala `using-superpowers`: este skill ocupa o papel de ponto de entrada.
 
+## Quando falta um skill
+
+Se nenhum skill instalado cobre o que a tarefa precisa, procure nesta ordem e pare no primeiro que resolver:
+
+1. **Catálogo do ATLAS.** Veja se um módulo cobre a necessidade (`.atlas/atlas.json` lista os instalados; os demais estão no repositório do ATLAS em `catalog/modules/`). Se cobre, proponha reinstalar com `--with <módulo>`.
+2. **Ecossistema, com `find-skills`.** Busque com `npx skills find <termo>` e verifique instalações, autor e estrelas antes de recomendar.
+3. **Antes de criar, `skill-scout`.** Procure em fontes locais e no GitHub. Se for preciso criar, o skill novo é escrito no repositório do ATLAS, não no projeto.
+
+**Instalar um skill de fora é um gate.** Ele roda com as permissões do agente, então mostre nome, fonte, instalações e o comando, e só instale (`npx skills add <fonte> --skill <nome> --agent claude-code --yes`) depois que o usuário aprovar. A instalação fica registrada no `skills-lock.json` do projeto. Anote no ledger qual skill foi instalado e por quê; um skill de fora que aparecer em dois projetos é candidato a virar módulo do ATLAS.
+
 ## Handoff sem estado oculto
 
 Spec, plano, ledger e relatório de revisão são arquivos (por padrão em `docs/atlas/<data>-<slug>/`). Qualquer sessão retoma a partir deles. Nunca dependa de memória da conversa para saber em que fase o trabalho está.

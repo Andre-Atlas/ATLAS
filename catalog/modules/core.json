@@ -1,12 +1,54 @@
 {
   "description": "Núcleo sempre instalado: maestro, espinha do superpowers e especialistas transversais do ECC.",
   "skills": {
-    "atlas": ["atlas-maestro"],
-    "superpowers": ["brainstorming", "writing-plans", "using-git-worktrees", "subagent-driven-development", "executing-plans", "dispatching-parallel-agents", "test-driven-development", "systematic-debugging", "requesting-code-review", "receiving-code-review", "verification-before-completion", "finishing-a-development-branch"],
-    "ecc": ["search-first", "verification-loop", "architecture-decision-records", "intent-driven-development", "council", "dev-team", "git-workflow", "security-review", "coding-standards"]
+    "atlas": [
+      "atlas-maestro"
+    ],
+    "superpowers": [
+      "brainstorming",
+      "writing-plans",
+      "using-git-worktrees",
+      "subagent-driven-development",
+      "executing-plans",
+      "dispatching-parallel-agents",
+      "test-driven-development",
+      "systematic-debugging",
+      "requesting-code-review",
+      "receiving-code-review",
+      "verification-before-completion",
+      "finishing-a-development-branch"
+    ],
+    "ecc": [
+      "search-first",
+      "verification-loop",
+      "architecture-decision-records",
+      "intent-driven-development",
+      "council",
+      "dev-team",
+      "git-workflow",
+      "security-review",
+      "coding-standards",
+      "skill-scout"
+    ],
+    "skills": [
+      "find-skills"
+    ]
   },
   "agents": {
-    "atlas": ["maestro"],
-    "ecc": ["planner", "architect", "code-architect", "code-explorer", "tdd-guide", "code-reviewer", "security-reviewer", "build-error-resolver", "refactor-cleaner", "doc-updater"]
+    "atlas": [
+      "maestro"
+    ],
+    "ecc": [
+      "planner",
+      "architect",
+      "code-architect",
+      "code-explorer",
+      "tdd-guide",
+      "code-reviewer",
+      "security-reviewer",
+      "build-error-resolver",
+      "refactor-cleaner",
+      "doc-updater"
+    ]
   }
 }
