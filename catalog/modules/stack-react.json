@@ -1,0 +1,6 @@
+{
+  "description": "Stack React/Next.js com TypeScript.",
+  "stack": "react",
+  "skills": { "ecc": ["react-patterns", "react-testing", "react-performance", "frontend-patterns", "nextjs-turbopack", "e2e-testing"] },
+  "agents": { "ecc": ["react-reviewer", "typescript-reviewer", "react-build-resolver", "e2e-runner"] }
+}

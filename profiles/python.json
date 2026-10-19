@@ -1,0 +1,1 @@
+{ "description": "Backend Python com Arquitetura e Auditoria.", "modules": ["core", "lane-architecture", "lane-audit", "stack-python"] }

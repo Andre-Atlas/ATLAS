@@ -1,0 +1,6 @@
+{
+  "description": "Stack Python (FastAPI ou Django).",
+  "stack": "python",
+  "skills": { "ecc": ["python-patterns", "python-testing", "fastapi-patterns", "django-patterns"] },
+  "agents": { "ecc": ["python-reviewer", "fastapi-reviewer", "django-reviewer"] }
+}

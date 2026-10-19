@@ -1,0 +1,9 @@
+{
+  "description": "Lane Design: direção visual, design system, acessibilidade.",
+  "lane": "design",
+  "skills": {
+    "atlas": ["atlas-lane-design"],
+    "ecc": ["frontend-design-direction", "design-system", "make-interfaces-feel-better", "brand-discovery", "frontend-a11y", "accessibility", "click-path-audit"]
+  },
+  "agents": { "atlas": ["design-director"], "ecc": ["a11y-architect"] }
+}

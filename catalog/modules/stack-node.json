@@ -1,0 +1,6 @@
+{
+  "description": "Stack backend Node.js/TypeScript com Postgres.",
+  "stack": "node",
+  "skills": { "ecc": ["backend-patterns", "api-design", "postgres-patterns", "nestjs-patterns"] },
+  "agents": { "ecc": ["typescript-reviewer", "database-reviewer"] }
+}
