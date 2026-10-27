@@ -2,10 +2,12 @@
 'use strict';
 
 /**
- * Instala o ATLAS num projeto: skills (via CLI `skills`), agentes em
- * .claude/agents, manifesto em .atlas/atlas.json e o bloco do CLAUDE.md.
+ * Instala o ATLAS num projeto: skills (via CLI `skills`), agentes na pasta do
+ * harness, manifesto em .atlas/atlas.json e o bloco no arquivo de instruções
+ * do harness (CLAUDE.md no Claude Code, AGENTS.md no Antigravity).
  *
  *   node scripts/atlas-install.js --target ../meu-projeto --profile web
+ *   node scripts/atlas-install.js --target ../meu-projeto --profile web --agent antigravity
  *   node scripts/atlas-install.js --target . --profile minimal --with lane-audit --dry-run
  */
 
@@ -15,15 +17,17 @@ const { spawnSync } = require('child_process');
 const { ATLAS_ROOT, loadSources, listProfiles, listModules, resolveInstall } = require('./lib/catalog');
 const { renderBlock, upsertBlock } = require('./lib/claude-block');
 const { skillSpec, skillsAddArgs, agentRoot } = require('./lib/sources');
+const { HARNESSES, getHarness } = require('./lib/harness');
 
 const USAGE = `Uso: atlas-install --target <dir> [--profile <nome>] [--with <mod1,mod2>]
-                     [--agent claude-code] [--atlas-ref <ref>]
+                     [--agent <harness>] [--atlas-ref <ref>]
                      [--atlas-path <dir>] [--ecc-path <dir>] [--superpowers-path <dir>]
                      [--skip-skills] [--dry-run]
 
 Por padrão as skills vêm do GitHub nos commits fixados em catalog/sources.json
 (ATLAS em \`main\`). Os --*-path usam uma cópia local, útil para desenvolver o ATLAS.
 
+Harnesses: ${Object.keys(HARNESSES).join(', ')} (padrão: claude-code)
 Perfis: ${listProfiles().join(', ')}
 Módulos: ${listModules().join(', ')}`;
 
@@ -49,6 +53,7 @@ function parseArgs(argv) {
     else throw new Error(`Opção desconhecida: ${a}`);
   }
   opts.target = path.resolve(opts.target);
+  opts.harness = getHarness(opts.agent);
   return opts;
 }
 
@@ -71,7 +76,7 @@ function installSkills(resolved, sources, opts) {
 }
 
 function installAgents(resolved, sources, opts) {
-  const dest = path.join(opts.target, '.claude', 'agents');
+  const dest = path.join(opts.target, ...opts.harness.agentsDir);
   const cache = {};
   const installed = [];
   for (const [name, agents] of Object.entries(resolved.agents)) {
@@ -85,7 +90,8 @@ function installAgents(resolved, sources, opts) {
     for (const a of agents) {
       const from = path.join(dir, `${a}.md`);
       if (!fs.existsSync(from)) throw new Error(`Agente ${a} não existe em ${name} (${from})`);
-      fs.copyFileSync(from, path.join(dest, `${a}.md`));
+      const content = opts.harness.adaptAgent(fs.readFileSync(from, 'utf8'), `${name}:${a}`);
+      fs.writeFileSync(path.join(dest, `${a}.md`), content);
       installed.push(`${name}:${a}`);
     }
   }
@@ -98,8 +104,11 @@ function writeManifest(resolved, sources, opts) {
   for (const [name, s] of Object.entries(sources)) {
     pinned[name] = opts.overrides[name] ? { repo: s.repo, local: true } : { repo: s.repo, ref: opts.refs[name] || s.ref };
   }
+  const file = path.join(opts.target, '.atlas', 'atlas.json');
+  const previous = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
   const manifest = {
     version: 1,
+    harnesses: [...new Set([...(previous.harnesses || []), opts.agent])].sort(),
     profile: resolved.profile,
     modules: resolved.modules,
     lanes: resolved.lanes,
@@ -109,21 +118,37 @@ function writeManifest(resolved, sources, opts) {
     agents: resolved.agents,
   };
   if (opts.dryRun) return manifest;
-  const dir = path.join(opts.target, '.atlas');
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'atlas.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
   return manifest;
 }
 
-function writeClaudeBlock(manifest, opts) {
-  const file = path.join(opts.target, 'CLAUDE.md');
+function writeInstructionsBlock(manifest, opts) {
+  const name = opts.harness.instructionsFile;
+  const file = path.join(opts.target, name);
   const current = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
-  const next = upsertBlock(current, renderBlock(manifest));
+  const next = upsertBlock(current, renderBlock(manifest, opts.agent));
   if (opts.dryRun) {
-    log(`CLAUDE.md: bloco ATLAS ${current.includes('ATLAS:BEGIN') ? 'atualizado' : 'adicionado'}`);
+    log(`${name}: bloco ATLAS ${current.includes('ATLAS:BEGIN') ? 'atualizado' : 'adicionado'}`);
     return;
   }
   fs.writeFileSync(file, next);
+}
+
+/** Install one profile (plus extra modules) for one harness. `opts` has the shape parseArgs returns. */
+function install(opts) {
+  if (!fs.existsSync(opts.target)) throw new Error(`Diretório alvo não existe: ${opts.target}`);
+
+  const sources = loadSources();
+  const resolved = resolveInstall(opts.profile, opts.with);
+  log(`harness ${opts.agent} · perfil ${resolved.profile} · módulos: ${resolved.modules.join(', ')}${opts.dryRun ? ' · simulação' : ''}`);
+
+  if (!opts.skipSkills) installSkills(resolved, sources, opts);
+  installAgents(resolved, sources, opts);
+  const manifest = writeManifest(resolved, sources, opts);
+  writeInstructionsBlock(manifest, opts);
+  log(opts.dryRun ? 'simulação concluída, nada foi escrito' : `pronto em ${opts.target}`);
+  return manifest;
 }
 
 function main(argv) {
@@ -132,17 +157,7 @@ function main(argv) {
     process.stdout.write(`${USAGE}\n`);
     return 0;
   }
-  if (!fs.existsSync(opts.target)) throw new Error(`Diretório alvo não existe: ${opts.target}`);
-
-  const sources = loadSources();
-  const resolved = resolveInstall(opts.profile, opts.with);
-  log(`perfil ${resolved.profile} · módulos: ${resolved.modules.join(', ')}${opts.dryRun ? ' · simulação' : ''}`);
-
-  if (!opts.skipSkills) installSkills(resolved, sources, opts);
-  installAgents(resolved, sources, opts);
-  const manifest = writeManifest(resolved, sources, opts);
-  writeClaudeBlock(manifest, opts);
-  log(opts.dryRun ? 'simulação concluída, nada foi escrito' : `pronto em ${opts.target}`);
+  install(opts);
   return 0;
 }
 
@@ -155,4 +170,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { main, parseArgs };
+module.exports = { main, parseArgs, install };

@@ -30,3 +30,9 @@ test('replaces an existing block in place and is idempotent', () => {
   assert.strictEqual(first.split(BEGIN).length, 2);
   assert.strictEqual(upsertBlock(first, renderBlock({ ...manifest, lanes: [] })), first);
 });
+
+test('adds Antigravity notes only for Antigravity', () => {
+  assert.ok(!renderBlock(manifest).includes('invoke_subagent'));
+  assert.ok(renderBlock(manifest, 'antigravity').includes('invoke_subagent'));
+  assert.ok(renderBlock(manifest, 'antigravity-cli').includes('references/antigravity.md'));
+});

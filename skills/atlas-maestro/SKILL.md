@@ -5,7 +5,9 @@ description: Conduz todo pedido de desenvolvimento num projeto com ATLAS instala
 
 # ATLAS Maestro
 
-O maestro é o regente do fluxo. Ele **não implementa**: decide o caminho, chama as skills e os agentes certos em cada fase e guarda os gates. A sessão principal executa este skill; o agente `maestro` existe só para a classificação inicial quando o pedido é grande ou ambíguo (subagentes não conseguem chamar outros subagentes, então a regência fica sempre na sessão principal).
+O maestro é o regente do fluxo. Ele **não implementa**: decide o caminho, chama as skills e os agentes certos em cada fase e guarda os gates. A sessão principal executa este skill; o agente `maestro` existe só para a classificação inicial quando o pedido é grande ou ambíguo (no Claude Code subagentes não chamam outros subagentes, e em qualquer harness só a sessão principal fala com o usuário, então a regência fica sempre nela).
+
+**Harness.** `.atlas/atlas.json` → `harnesses` diz onde o projeto roda. No Antigravity, leia antes `references/antigravity.md`, que traduz as ferramentas citadas pelos skills (`Task`, `TodoWrite`, `Read`…) para as do Antigravity.
 
 ## Quando usar
 
@@ -119,7 +121,7 @@ Se nenhum skill instalado cobre o que a tarefa precisa, procure nesta ordem e pa
 2. **Ecossistema, com `find-skills`.** Busque com `npx skills find <termo>` e verifique instalações, autor e estrelas antes de recomendar.
 3. **Antes de criar, `skill-scout`.** Procure em fontes locais e no GitHub. Se for preciso criar, o skill novo é escrito no repositório do ATLAS, não no projeto.
 
-**Instalar um skill de fora é um gate.** Ele roda com as permissões do agente, então mostre nome, fonte, instalações e o comando, e só instale (`npx skills add <fonte> --skill <nome> --agent claude-code --yes`) depois que o usuário aprovar. A instalação fica registrada no `skills-lock.json` do projeto. Anote no ledger qual skill foi instalado e por quê; um skill de fora que aparecer em dois projetos é candidato a virar módulo do ATLAS.
+**Instalar um skill de fora é um gate.** Ele roda com as permissões do agente, então mostre nome, fonte, instalações e o comando, e só instale (`npx skills add <fonte> --skill <nome> --agent <harness> --yes`, com o harness de `.atlas/atlas.json`) depois que o usuário aprovar. A instalação fica registrada no `skills-lock.json` do projeto. Anote no ledger qual skill foi instalado e por quê; um skill de fora que aparecer em dois projetos é candidato a virar módulo do ATLAS.
 
 ## Handoff sem estado oculto
 
