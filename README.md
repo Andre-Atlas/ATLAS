@@ -20,10 +20,18 @@ O instalador:
 
 1. instala as skills do perfil no projeto com o CLI [`skills`](https://github.com/Andre-Atlas/skills), gerando `skills-lock.json` com as versões exatas;
 2. copia os agentes para `.claude/agents/`;
-3. grava o manifesto `.atlas/atlas.json` (perfil, lanes, stacks, fontes);
+3. grava o manifesto `.atlas/atlas.json` (perfil, lanes, stacks, fontes, harnesses);
 4. adiciona ao `CLAUDE.md` do projeto um bloco entre `<!-- ATLAS:BEGIN -->` e `<!-- ATLAS:END -->`, sem tocar no resto do arquivo.
 
 Rodar de novo atualiza tudo no lugar. Use `--dry-run` para ver o que seria feito.
+
+### Google Antigravity
+
+```bash
+node scripts/atlas-install.js --target ../meu-projeto --profile web --agent antigravity
+```
+
+Com `--agent antigravity` (ou `antigravity-cli`) as skills vão para `.agents/skills/`, os agentes para `.agents/agents/` com as ferramentas e o modelo traduzidos, e o bloco ATLAS para o `AGENTS.md`. O guia completo, com o mapa de conceitos e a configuração dos gates, está em [docs/antigravity.md](docs/antigravity.md).
 
 ### Perfis
 
