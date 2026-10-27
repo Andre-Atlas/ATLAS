@@ -10,7 +10,20 @@ A arquitetura completa e as decisões tomadas estão em [docs/arquitetura.md](do
 
 ## Instalar num projeto
 
-Requer Node 18+ e git. Na pasta do ATLAS:
+Requer Node 18+ e git. Na pasta do projeto, sem clonar o ATLAS:
+
+```bash
+npx github:Andre-Atlas/ATLAS init                      # pergunta o perfil e os agentes
+npx github:Andre-Atlas/ATLAS init --profile web --agent claude-code,antigravity -y
+npx github:Andre-Atlas/ATLAS add lane-audit stack-node # adiciona módulos
+npx github:Andre-Atlas/ATLAS remove lane-audit         # remove módulos (skills e agentes)
+npx github:Andre-Atlas/ATLAS update                    # reinstala nas versões fixadas
+npx github:Andre-Atlas/ATLAS list                      # instalado e catálogo
+```
+
+Sem `--agent`, o `init` detecta os agentes pelo projeto (`.claude/`, `CLAUDE.md`, `.agents/agents/`) e depois pela pasta home (`~/.claude`, `~/.gemini/antigravity`). Os outros comandos usam os agentes gravados no manifesto. Todos aceitam `--target <dir>` e `--dry-run`.
+
+O mesmo fluxo existe como script, a partir de um clone do ATLAS:
 
 ```bash
 node scripts/atlas-install.js --target ../meu-projeto --profile web
@@ -28,7 +41,7 @@ Rodar de novo atualiza tudo no lugar. Use `--dry-run` para ver o que seria feito
 ### Google Antigravity
 
 ```bash
-node scripts/atlas-install.js --target ../meu-projeto --profile web --agent antigravity
+npx github:Andre-Atlas/ATLAS init --profile web --agent antigravity
 ```
 
 Com `--agent antigravity` (ou `antigravity-cli`) as skills vão para `.agents/skills/`, os agentes para `.agents/agents/` com as ferramentas e o modelo traduzidos, e o bloco ATLAS para o `AGENTS.md`. O guia completo, com o mapa de conceitos e a configuração dos gates, está em [docs/antigravity.md](docs/antigravity.md).

@@ -57,13 +57,24 @@ Ferramentas sem equivalente (por exemplo `Task`) saem da lista, porque um nome q
 
 ## 3. Instalar num projeto
 
-Requer Node 18+ e git. Na pasta do ATLAS:
+Requer Node 18+ e git. Na pasta do projeto, sem clonar o ATLAS:
 
 ```bash
-node scripts/atlas-install.js --target ../meu-projeto --profile web --agent antigravity
+npx github:Andre-Atlas/ATLAS init --profile web --agent antigravity
 ```
 
-Use `--agent antigravity-cli` se o projeto for usado só pelo `agy`; o resultado no projeto é o mesmo. `--dry-run` mostra o que seria feito.
+Sem `--agent`, o `init` detecta o Antigravity pelo projeto (`.agents/agents/`, `GEMINI.md`) ou pela pasta home (`~/.gemini/antigravity`) e pergunta antes de instalar; `-y` pula as perguntas. Use `--agent antigravity-cli` se o projeto for usado só pelo `agy`; o resultado no projeto é o mesmo. `--dry-run` mostra o que seria feito.
+
+Depois da instalação, o projeto é mantido com os mesmos comandos do Claude Code:
+
+| Comando | O que faz |
+|---|---|
+| `npx github:Andre-Atlas/ATLAS add lane-audit` | adiciona módulos: skills em `.agents/skills/`, agentes traduzidos em `.agents/agents/` |
+| `npx github:Andre-Atlas/ATLAS remove lane-audit` | remove as skills e os agentes que só aquele módulo usava |
+| `npx github:Andre-Atlas/ATLAS update` | reinstala nas versões fixadas em `catalog/sources.json` |
+| `npx github:Andre-Atlas/ATLAS list` | mostra perfil, agentes, lanes e o catálogo de módulos |
+
+A partir de um clone do ATLAS, o equivalente é `node scripts/atlas-install.js --target ../meu-projeto --profile web --agent antigravity`.
 
 O que aparece no projeto:
 
@@ -77,7 +88,7 @@ meu-projeto/
     └── agents/            # maestro, design-director, audit-lead e os agentes do ECC do perfil
 ```
 
-O mesmo projeto pode ter as duas instalações. Rode o instalador uma vez com `--agent claude-code` e outra com `--agent antigravity`: cada uma escreve nas pastas do seu harness e `.atlas/atlas.json` lista as duas em `harnesses`.
+O mesmo projeto pode ter as duas instalações: `init --agent claude-code,antigravity`. Cada uma escreve nas pastas do seu harness, `.atlas/atlas.json` lista as duas em `harnesses`, e `add`, `remove` e `update` passam a atualizar as duas.
 
 Os perfis e módulos são os mesmos do Claude Code (veja o [README](../README.md#perfis)).
 

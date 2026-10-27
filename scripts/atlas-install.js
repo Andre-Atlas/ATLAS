@@ -135,12 +135,8 @@ function writeInstructionsBlock(manifest, opts) {
   fs.writeFileSync(file, next);
 }
 
-function main(argv) {
-  const opts = parseArgs(argv);
-  if (opts.help) {
-    process.stdout.write(`${USAGE}\n`);
-    return 0;
-  }
+/** Install one profile (plus extra modules) for one harness. `opts` has the shape parseArgs returns. */
+function install(opts) {
   if (!fs.existsSync(opts.target)) throw new Error(`Diretório alvo não existe: ${opts.target}`);
 
   const sources = loadSources();
@@ -152,6 +148,16 @@ function main(argv) {
   const manifest = writeManifest(resolved, sources, opts);
   writeInstructionsBlock(manifest, opts);
   log(opts.dryRun ? 'simulação concluída, nada foi escrito' : `pronto em ${opts.target}`);
+  return manifest;
+}
+
+function main(argv) {
+  const opts = parseArgs(argv);
+  if (opts.help) {
+    process.stdout.write(`${USAGE}\n`);
+    return 0;
+  }
+  install(opts);
   return 0;
 }
 
@@ -164,4 +170,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { main, parseArgs };
+module.exports = { main, parseArgs, install };
