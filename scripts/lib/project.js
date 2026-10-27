@@ -20,6 +20,8 @@ function detectHarnesses(target, home = os.homedir()) {
   const has = (...p) => fs.existsSync(path.join(...p));
   const found = new Set();
   if (has(target, '.claude') || has(target, 'CLAUDE.md')) found.add('claude-code');
+  // In the home folder (global install) ~/.gemini is Antigravity's own folder.
+  if (has(target, '.gemini', 'antigravity') || has(target, '.gemini', 'config')) found.add('antigravity');
   if (has(target, '.agents', 'agents') || has(target, 'GEMINI.md')) found.add('antigravity');
   if (!found.size) {
     if (has(home, '.claude')) found.add('claude-code');

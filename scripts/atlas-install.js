@@ -12,6 +12,7 @@
  */
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { ATLAS_ROOT, loadSources, listProfiles, listModules, resolveInstall } = require('./lib/catalog');
@@ -20,9 +21,11 @@ const { skillSpec, skillsAddArgs, agentRoot } = require('./lib/sources');
 const { HARNESSES, getHarness } = require('./lib/harness');
 
 const USAGE = `Uso: atlas-install --target <dir> [--profile <nome>] [--with <mod1,mod2>]
-                     [--agent <harness>] [--atlas-ref <ref>]
+                     [--agent <harness>] [--global] [--atlas-ref <ref>]
                      [--atlas-path <dir>] [--ecc-path <dir>] [--superpowers-path <dir>]
                      [--skip-skills] [--dry-run]
+
+--global instala na pasta home (~/.claude, ~/.gemini) e vale para todos os projetos.
 
 Por padrão as skills vêm do GitHub nos commits fixados em catalog/sources.json
 (ATLAS em \`main\`). Os --*-path usam uma cópia local, útil para desenvolver o ATLAS.
@@ -48,12 +51,15 @@ function parseArgs(argv) {
     else if (a === '--ecc-path') opts.overrides.ecc = next();
     else if (a === '--superpowers-path') opts.overrides.superpowers = next();
     else if (a === '--skip-skills') opts.skipSkills = true;
+    else if (a === '--global' || a === '-g') opts.global = true;
     else if (a === '--dry-run') opts.dryRun = true;
     else if (a === '--help' || a === '-h') opts.help = true;
     else throw new Error(`Opção desconhecida: ${a}`);
   }
+  // ATLAS_HOME lets tests point the global install at a temp folder.
+  if (opts.global) opts.target = process.env.ATLAS_HOME || os.homedir();
   opts.target = path.resolve(opts.target);
-  opts.harness = getHarness(opts.agent);
+  opts.harness = getHarness(opts.agent, { global: !!opts.global });
   return opts;
 }
 
@@ -64,7 +70,7 @@ function log(msg) {
 function installSkills(resolved, sources, opts) {
   for (const [name, skills] of Object.entries(resolved.skills)) {
     const spec = skillSpec(name, sources[name], opts.overrides, opts.refs);
-    const args = skillsAddArgs(spec, skills, opts.agent);
+    const args = skillsAddArgs(spec, skills, opts.agent, opts.harness.global);
     log(`skills de ${name}: ${skills.length}`);
     if (opts.dryRun) {
       log(`  npx ${args.join(' ')}`);
@@ -108,6 +114,7 @@ function writeManifest(resolved, sources, opts) {
   const previous = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
   const manifest = {
     version: 1,
+    scope: opts.harness.global ? 'global' : 'project',
     harnesses: [...new Set([...(previous.harnesses || []), opts.agent])].sort(),
     profile: resolved.profile,
     modules: resolved.modules,
@@ -127,11 +134,12 @@ function writeInstructionsBlock(manifest, opts) {
   const name = opts.harness.instructionsFile;
   const file = path.join(opts.target, name);
   const current = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
-  const next = upsertBlock(current, renderBlock(manifest, opts.agent));
+  const next = upsertBlock(current, renderBlock(manifest, opts.agent, { global: opts.harness.global }));
   if (opts.dryRun) {
     log(`${name}: bloco ATLAS ${current.includes('ATLAS:BEGIN') ? 'atualizado' : 'adicionado'}`);
     return;
   }
+  fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, next);
 }
 

@@ -16,10 +16,11 @@ function skillSpec(name, source, overrides, refs = {}) {
   return `${source.repo}#${refs[name] || source.ref}`;
 }
 
-function skillsAddArgs(spec, skillNames, agent) {
+function skillsAddArgs(spec, skillNames, agent, global = false) {
   const args = ['-y', SKILLS_CLI, 'add', spec];
   for (const s of skillNames) args.push('--skill', s);
   args.push('--agent', agent, '--yes');
+  if (global) args.push('--global');
   return args;
 }
 

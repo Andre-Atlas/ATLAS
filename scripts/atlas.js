@@ -27,7 +27,10 @@ const USAGE = `ATLAS: orquestração de agentes para projetos de software
   npx github:Andre-Atlas/ATLAS update                                      reinstala nas versões fixadas
   npx github:Andre-Atlas/ATLAS list                                        mostra o instalado e o catálogo
 
-Opções: --target <dir>, -y/--yes (sem perguntas), --dry-run, --with <mód,...>,
+Com -g/--global, qualquer comando age na pasta home (~/.claude, ~/.gemini) e o
+ATLAS passa a valer em todos os projetos. Uma instalação no projeto vale no lugar dela.
+
+Opções: --target <dir>, -g/--global, -y/--yes (sem perguntas), --dry-run, --with <mód,...>,
         --atlas-ref, --atlas-path, --ecc-path, --superpowers-path, --skip-skills
 Agentes: ${Object.keys(HARNESSES).join(', ')} (sem --agent, detecta pelo projeto e pela pasta home)
 Perfis: ${listProfiles().join(', ')}`;
@@ -42,7 +45,7 @@ function parseCli(argv) {
     else if (a === '--profile') out.profile = argv[++i];
     else if (a.startsWith('-')) {
       out.rest.push(a);
-      if (!['--dry-run', '--skip-skills'].includes(a)) out.rest.push(argv[++i]);
+      if (!['--dry-run', '--skip-skills', '--global', '-g'].includes(a)) out.rest.push(argv[++i]);
     } else out.names.push(a);
   }
   if (out.agents) out.agents.forEach(getHarness);
@@ -83,22 +86,22 @@ async function init(cli) {
 }
 
 function requireManifest(cli) {
-  const target = parseArgs(cli.rest).target;
+  const { target, global } = parseArgs(cli.rest);
   const manifest = readManifest(target);
-  if (!manifest) throw new Error(`ATLAS não está instalado em ${target}. Rode \`init\` primeiro.`);
-  return { target, manifest, agents: cli.agents || manifest.harnesses || ['claude-code'] };
+  if (!manifest) throw new Error(`ATLAS não está instalado em ${target}. Rode \`init${global ? ' --global' : ''}\` primeiro.`);
+  return { target, global: !!global, manifest, agents: cli.agents || manifest.harnesses || ['claude-code'] };
 }
 
 function change(cli, kind) {
   if (!cli.names.length) throw new Error(`Diga quais módulos: ${kind} <módulo...>`);
   cli.names.forEach((m) => loadModule(m));
-  const { target, manifest, agents } = requireManifest(cli);
+  const { target, global, manifest, agents } = requireManifest(cli);
   const plan = planModules(manifest, kind === 'add' ? { add: cli.names } : { remove: cli.names });
   if (kind === 'remove') {
     const gone = dropped(manifest, resolveInstall(plan.profile, plan.with));
     const dryRun = cli.rest.includes('--dry-run');
     for (const agent of agents) {
-      const harness = getHarness(agent);
+      const harness = getHarness(agent, { global });
       for (const { name } of gone.agents) {
         const file = path.join(target, ...harness.agentsDir, `${name}.md`);
         if (dryRun) process.stdout.write(`[atlas] removeria ${path.relative(target, file)}\n`);
@@ -106,7 +109,7 @@ function change(cli, kind) {
       }
       const skills = gone.skills.map((s) => s.name);
       if (!skills.length || cli.rest.includes('--skip-skills')) continue;
-      const args = ['-y', SKILLS_CLI, 'remove', ...skills, '--agent', agent, '-y'];
+      const args = ['-y', SKILLS_CLI, 'remove', ...skills, '--agent', agent, '-y', ...(global ? ['--global'] : [])];
       process.stdout.write(`[atlas] ${dryRun ? 'removeria' : 'removendo'} skills (${agent}): ${skills.join(', ')}\n`);
       if (dryRun) continue;
       const res = spawnSync('npx', args, { cwd: target, stdio: 'inherit' });

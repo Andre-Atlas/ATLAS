@@ -17,7 +17,7 @@ Você classifica um pedido e propõe o roteamento seguindo o skill `atlas-maestr
 
 ## Como trabalhar
 
-1. Leia `.atlas/atlas.json` para saber as lanes disponíveis.
+1. Leia `.atlas/atlas.json` (ou `~/.atlas/atlas.json` na instalação global) para saber as lanes disponíveis.
 2. Localize o código afetado com Grep e Glob. Conte arquivos prováveis, procure contratos públicos (rotas HTTP, schemas, exports de pacote) e gatilhos de segurança.
 3. Aplique as tabelas de operação, paradigma e tamanho do `atlas-maestro`. Na dúvida entre dois tamanhos, escolha o maior.
 4. Monte o time: para cada lane ativa, o líder e os revisores dela; sempre `code-reviewer` e o revisor da linguagem detectada; `security-reviewer` se houver gatilho.

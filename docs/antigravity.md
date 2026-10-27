@@ -90,6 +90,8 @@ meu-projeto/
 
 O mesmo projeto pode ter as duas instalações: `init --agent claude-code,antigravity`. Cada uma escreve nas pastas do seu harness, `.atlas/atlas.json` lista as duas em `harnesses`, e `add`, `remove` e `update` passam a atualizar as duas.
 
+Para valer em todos os projetos, sem instalar nada no repositório, use `--global`: as skills vão para `~/.gemini/antigravity/skills/`, os agentes para `~/.gemini/config/agents/`, o bloco ATLAS para `~/.gemini/AGENTS.md` e o manifesto para `~/.atlas/atlas.json`. Um projeto com instalação própria usa a dele no lugar da global.
+
 Os perfis e módulos são os mesmos do Claude Code (veja o [README](../README.md#perfis)).
 
 ## 4. Configurar o Antigravity para os gates
