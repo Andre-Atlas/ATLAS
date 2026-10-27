@@ -56,28 +56,31 @@ function toAntigravityAgent(source, label = '<agente>') {
   return `---\n${out.join('\n')}\n---\n${body}`;
 }
 
+// `global` paths are relative to the user's home folder and apply to every project.
+const ANTIGRAVITY = {
+  agentsDir: ['.agents', 'agents'],
+  instructionsFile: 'AGENTS.md',
+  global: { agentsDir: ['.gemini', 'config', 'agents'], instructionsFile: '.gemini/AGENTS.md' },
+  adaptAgent: toAntigravityAgent,
+};
+
 const HARNESSES = Object.freeze({
   'claude-code': {
     agentsDir: ['.claude', 'agents'],
     instructionsFile: 'CLAUDE.md',
+    global: { agentsDir: ['.claude', 'agents'], instructionsFile: '.claude/CLAUDE.md' },
     adaptAgent: (source) => source,
   },
-  antigravity: {
-    agentsDir: ['.agents', 'agents'],
-    instructionsFile: 'AGENTS.md',
-    adaptAgent: toAntigravityAgent,
-  },
-  'antigravity-cli': {
-    agentsDir: ['.agents', 'agents'],
-    instructionsFile: 'AGENTS.md',
-    adaptAgent: toAntigravityAgent,
-  },
+  antigravity: ANTIGRAVITY,
+  'antigravity-cli': ANTIGRAVITY,
 });
 
-function getHarness(name) {
+/** The harness with its paths for a project install, or for the home folder when `global` is set. */
+function getHarness(name, { global = false } = {}) {
   const h = HARNESSES[name];
   if (!h) throw new Error(`Harness não suportado: ${name}. Suportados: ${Object.keys(HARNESSES).join(', ')}`);
-  return { name, ...h };
+  const paths = global ? h.global : { agentsDir: h.agentsDir, instructionsFile: h.instructionsFile };
+  return { name, adaptAgent: h.adaptAgent, global, ...paths };
 }
 
 module.exports = { HARNESSES, getHarness, toAntigravityAgent };

@@ -7,7 +7,9 @@ description: Conduz todo pedido de desenvolvimento num projeto com ATLAS instala
 
 O maestro é o regente do fluxo. Ele **não implementa**: decide o caminho, chama as skills e os agentes certos em cada fase e guarda os gates. A sessão principal executa este skill; o agente `maestro` existe só para a classificação inicial quando o pedido é grande ou ambíguo (no Claude Code subagentes não chamam outros subagentes, e em qualquer harness só a sessão principal fala com o usuário, então a regência fica sempre nela).
 
-**Harness.** `.atlas/atlas.json` → `harnesses` diz onde o projeto roda. No Antigravity, leia antes `references/antigravity.md`, que traduz as ferramentas citadas pelos skills (`Task`, `TodoWrite`, `Read`…) para as do Antigravity.
+**Manifesto.** Leia `.atlas/atlas.json` do projeto; se não existir, o ATLAS está instalado globalmente e o manifesto é `~/.atlas/atlas.json`. Toda menção a `.atlas/atlas.json` abaixo vale para o que foi encontrado. Os artefatos de trabalho ficam sempre no projeto, em `docs/atlas/`.
+
+**Harness.** `harnesses` no manifesto diz onde o projeto roda. No Antigravity, leia antes `references/antigravity.md`, que traduz as ferramentas citadas pelos skills (`Task`, `TodoWrite`, `Read`…) para as do Antigravity.
 
 ## Quando usar
 

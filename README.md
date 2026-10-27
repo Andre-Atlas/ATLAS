@@ -23,6 +23,25 @@ npx github:Andre-Atlas/ATLAS list                      # instalado e catálogo
 
 Sem `--agent`, o `init` detecta os agentes pelo projeto (`.claude/`, `CLAUDE.md`, `.agents/agents/`) e depois pela pasta home (`~/.claude`, `~/.gemini/antigravity`). Os outros comandos usam os agentes gravados no manifesto. Todos aceitam `--target <dir>` e `--dry-run`.
 
+### Instalação global (todos os projetos)
+
+```bash
+npx github:Andre-Atlas/ATLAS init --global --profile web --agent claude-code,antigravity
+```
+
+Com `-g`/`--global` o ATLAS vai para a pasta home e passa a valer em qualquer projeto aberto no Claude Code ou no Antigravity, sem instalar nada no repositório:
+
+| | Claude Code | Antigravity |
+|---|---|---|
+| Skills | `~/.claude/skills/` | `~/.gemini/antigravity/skills/` |
+| Agentes | `~/.claude/agents/` | `~/.gemini/config/agents/` |
+| Bloco ATLAS | `~/.claude/CLAUDE.md` | `~/.gemini/AGENTS.md` |
+| Manifesto | `~/.atlas/atlas.json` | `~/.atlas/atlas.json` |
+
+`add`, `remove`, `update` e `list` aceitam `--global` do mesmo jeito. Um projeto com instalação própria (`.atlas/atlas.json`) usa a dele no lugar da global, o que serve para fixar um perfil diferente por projeto. Os artefatos de trabalho (spec, plano, ledger) continuam em `docs/atlas/` de cada projeto.
+
+A instalação global vale para o Claude Code (terminal, desktop e IDE). O chat do claude.ai não tem subagentes nem lê `~/.claude`, então o fluxo do ATLAS não roda lá.
+
 O mesmo fluxo existe como script, a partir de um clone do ATLAS:
 
 ```bash

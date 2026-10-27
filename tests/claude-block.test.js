@@ -36,3 +36,10 @@ test('adds Antigravity notes only for Antigravity', () => {
   assert.ok(renderBlock(manifest, 'antigravity').includes('invoke_subagent'));
   assert.ok(renderBlock(manifest, 'antigravity-cli').includes('references/antigravity.md'));
 });
+
+test('global block points at the home manifest', () => {
+  const block = renderBlock(manifest, 'claude-code', { global: true });
+  assert.ok(block.includes('~/.atlas/atlas.json'));
+  assert.ok(block.includes('instalado globalmente'));
+  assert.ok(!renderBlock(manifest).includes('globalmente'));
+});

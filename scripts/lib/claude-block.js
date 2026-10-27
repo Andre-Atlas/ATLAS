@@ -4,35 +4,47 @@ const BEGIN = '<!-- ATLAS:BEGIN -->';
 const END = '<!-- ATLAS:END -->';
 
 // Extra lines for harnesses whose tools differ from Claude Code's.
-const HARNESS_NOTES = {
-  antigravity: [
+function antigravityNotes(global) {
+  return [
     '',
     'No Antigravity: delegar a um agente é `invoke_subagent` com o nome do agente de',
-    '`.agents/agents/`; a lista de tarefas é um artefato do tipo task. A tradução completa',
+    `\`${global ? '~/.gemini/config/agents/' : '.agents/agents/'}\`; a lista de tarefas é um artefato do tipo task. A tradução completa`,
     'das ferramentas citadas pelos skills está em `references/antigravity.md`, dentro do',
     'skill `atlas-maestro`. Os dois gates continuam valendo: pare e peça aprovação.',
-  ],
-};
-HARNESS_NOTES['antigravity-cli'] = HARNESS_NOTES.antigravity;
+  ];
+}
+const HARNESS_NOTES = { antigravity: antigravityNotes, 'antigravity-cli': antigravityNotes };
 
-function renderBlock(manifest, harness = 'claude-code') {
+function renderBlock(manifest, harness = 'claude-code', { global = false } = {}) {
+  const notes = HARNESS_NOTES[harness] ? HARNESS_NOTES[harness](global) : [];
+  const intro = global
+    ? [
+      'O ATLAS está instalado globalmente e vale em todos os projetos. Em todo pedido que vá',
+      'produzir ou alterar código, design, arquitetura ou um relatório de auditoria, carregue',
+      'primeiro o skill `atlas-maestro` e siga o fluxo dele: declarar a linha de classificação,',
+      'rodar as fases do tamanho declarado e respeitar os dois gates (spec + plano, e integração).',
+      'Se o projeto tiver o próprio `.atlas/atlas.json`, a instalação do projeto vale no lugar desta.',
+    ]
+    : [
+      'Este projeto usa o ATLAS. Em todo pedido que vá produzir ou alterar código, design,',
+      'arquitetura ou um relatório de auditoria, carregue primeiro o skill `atlas-maestro`',
+      'e siga o fluxo dele: declarar a linha de classificação, rodar as fases do tamanho',
+      'declarado e respeitar os dois gates (spec + plano, e integração).',
+    ];
   const lanes = manifest.lanes.length ? manifest.lanes.join(', ') : 'nenhuma (só o núcleo)';
   const stacks = manifest.stacks.length ? manifest.stacks.join(', ') : 'nenhuma';
   return [
     BEGIN,
     '## ATLAS: orquestração de agentes',
     '',
-    'Este projeto usa o ATLAS. Em todo pedido que vá produzir ou alterar código, design,',
-    'arquitetura ou um relatório de auditoria, carregue primeiro o skill `atlas-maestro`',
-    'e siga o fluxo dele: declarar a linha de classificação, rodar as fases do tamanho',
-    'declarado e respeitar os dois gates (spec + plano, e integração).',
+    ...intro,
     '',
     `- Perfil: \`${manifest.profile}\``,
     `- Lanes instaladas: ${lanes}`,
     `- Stacks: ${stacks}`,
-    '- Manifesto completo: `.atlas/atlas.json`',
-    '- Artefatos de trabalho (spec, plano, ledger, revisões): `docs/atlas/`',
-    ...(HARNESS_NOTES[harness] || []),
+    `- Manifesto completo: \`${global ? '~/.atlas/atlas.json' : '.atlas/atlas.json'}\``,
+    '- Artefatos de trabalho (spec, plano, ledger, revisões): `docs/atlas/` do projeto',
+    ...notes,
     '',
     'Este bloco é gerado pelo instalador do ATLAS. Edite fora dos marcadores.',
     END,

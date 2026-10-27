@@ -41,3 +41,19 @@ test('harness table knows where each harness reads agents and instructions', () 
   assert.strictEqual(getHarness('antigravity').instructionsFile, 'AGENTS.md');
   assert.throws(() => getHarness('vim'), /Harness não suportado/);
 });
+
+test('global paths live in the home folder', () => {
+  const cc = getHarness('claude-code', { global: true });
+  assert.deepStrictEqual(cc.agentsDir, ['.claude', 'agents']);
+  assert.strictEqual(cc.instructionsFile, '.claude/CLAUDE.md');
+  const ag = getHarness('antigravity', { global: true });
+  assert.deepStrictEqual(ag.agentsDir, ['.gemini', 'config', 'agents']);
+  assert.strictEqual(ag.instructionsFile, '.gemini/AGENTS.md');
+  assert.ok(ag.global && !getHarness('antigravity').global);
+});
+
+test('skills are installed with --global only for a global install', () => {
+  const { skillsAddArgs } = require('../scripts/lib/sources');
+  assert.ok(!skillsAddArgs('x', ['a'], 'claude-code').includes('--global'));
+  assert.ok(skillsAddArgs('x', ['a'], 'claude-code', true).includes('--global'));
+});

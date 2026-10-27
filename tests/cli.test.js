@@ -92,3 +92,28 @@ test('init, add, remove and update keep agents and manifest in sync', { skip: !E
   await assert.rejects(() => main(['add', ...base]), /Diga quais módulos/);
   await assert.rejects(() => main(['update', '--target', tmp('atlas-empty-')]), /não está instalado/);
 });
+
+test('--global installs in the home folder for every harness', { skip: !ECC && 'defina ATLAS_ECC_PATH' }, async () => {
+  const home = tmp('atlas-home-');
+  const previous = process.env.ATLAS_HOME;
+  process.env.ATLAS_HOME = home;
+  try {
+    const base = ['--global', '--skip-skills', '--ecc-path', ECC, '-y'];
+    await quiet(() => main(['init', '--profile', 'minimal', '--agent', 'claude-code,antigravity', ...base]));
+    assert.ok(fs.existsSync(path.join(home, '.claude', 'agents', 'maestro.md')));
+    assert.match(fs.readFileSync(path.join(home, '.gemini', 'config', 'agents', 'maestro.md'), 'utf8'), /^model: pro$/m);
+    assert.match(fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8'), /instalado globalmente/);
+    assert.match(fs.readFileSync(path.join(home, '.gemini', 'AGENTS.md'), 'utf8'), /~\/\.gemini\/config\/agents\//);
+    const manifest = JSON.parse(fs.readFileSync(path.join(home, '.atlas', 'atlas.json'), 'utf8'));
+    assert.strictEqual(manifest.scope, 'global');
+    assert.deepStrictEqual(manifest.harnesses, ['antigravity', 'claude-code']);
+
+    await quiet(() => main(['add', 'lane-audit', ...base]));
+    assert.ok(fs.existsSync(path.join(home, '.gemini', 'config', 'agents', 'audit-lead.md')));
+    await quiet(() => main(['remove', 'lane-audit', ...base]));
+    assert.ok(!fs.existsSync(path.join(home, '.claude', 'agents', 'audit-lead.md')));
+  } finally {
+    if (previous === undefined) delete process.env.ATLAS_HOME;
+    else process.env.ATLAS_HOME = previous;
+  }
+});
